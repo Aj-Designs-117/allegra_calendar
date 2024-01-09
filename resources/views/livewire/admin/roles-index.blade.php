@@ -15,8 +15,8 @@
         </div>
 
         @if ($roles->count())
-            <div class="card-body">
-                <table class="table table-striped">
+            <div class="card-body table-responsive">
+                <table class="table table-striped text-nowrap">
                     <thead>
                         <tr>
                             <th scope="col">ID</th>
@@ -52,6 +52,7 @@
         $(document).ready(function() {
             toastr.options = {
                 "positionClass": "toast-top-right",
+                "preventDuplicates": true,
                 "showDuration": "500",
                 "hideDuration": "1000",
                 "timeOut": "5000",

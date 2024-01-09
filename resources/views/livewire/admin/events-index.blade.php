@@ -11,13 +11,13 @@
     </div>
 
     @if ($events->count())
-        <div class="card-body" wire:poll.10s>
-            <table class="table table-striped text-center">
+        <div class="card-body table-responsive">
+            <table class="table table-striped text-nowrap">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
                         <th scope="col">Titulo</th>
-                        <th scope="col">Fecha</th>
+                        <th scope="col">Dia</th>
                         <th scope="col">Horario de inicio</th>
                         <th scope="col">Horario final</th>
                         <th scope="col">Cupos</th>
@@ -29,17 +29,17 @@
                         <tr>
                             <th scope="row">{{ $event->id }}</th>
                             <td>{{ $event->title }}</td>
-                            <td>{{ $event->start }}</td>
+                            <td>{{ $event->daysOfWeek }}</td>
                             <td>{{ $event->startTime }}</td>
                             <td>{{ $event->endTime }}</td>
-                            <td>{{ $event->limited_quotas }}</td>
+                            <td>{{ $event->max_quotas }}</td>
                             <td>
                                 @can('admin.events.edit')
                                     <x-adminlte-button wire:click="edit('{{ $event->id }}')" class="btn-sm"
                                         theme="primary" icon="fas fa-edit" data-toggle="modal" data-target="#updateModal" />
                                 @endcan
                                 @can('admin.events.destroy')
-                                    <x-adminlte-button wire:click="destroy('{{ $event->id }}')" class="btn-sm"
+                                    <x-adminlte-button wire:click="confirmDestroy('{{ $event->id }}')" class="btn-sm"
                                         theme="danger" icon="fas fa-trash-alt" />
                                 @endcan
                             </td>
@@ -64,41 +64,31 @@
             <form wire:submit.prevent="update('{{ $id }}')">
                 <label class="form-label">{{ __('Titulo') }}</label>
                 <input type="text" class="form-control @error('title') is-invalid @enderror" wire:model="title"
-                    required placeholder="Ingrese el titulo del horario" autofocus autocomplete="title">
-
-                <hr>
-                <label class="form-label">{{ __('Fecha de inicio') }}</label>
-                <input type="datetime-local" class="form-control @error('start') is-invalid @enderror"
-                    wire:model="start">
-
-                <label class="form-label mt-2">{{ __('Fecha final') }}</label>
-                <input type="datetime-local" class="form-control @error('end') is-invalid @enderror" wire:model="end">
-
-                <label class="form-label mt-2">{{ __('Numero de cupos') }}</label>
-                <input type="number" class="form-control @error('limited_quotas') is-invalid @enderror"
-                    wire:model="limited_quotas">
-
-                <hr>
-                <label class="form-label">{{ __('Horario recurrente (Ingrese la columna del mes)') }}</label>
-                <input type="number" max="7" class="form-control @error('daysOfWeek') is-invalid @enderror"
-                    wire:model="daysOfWeek">
+                    placeholder="Ingrese el titulo del evento" required>
 
                 <label class="form-label mt-2">{{ __('Hora de inicio') }}</label>
                 <input type="time" class="form-control @error('startTime') is-invalid @enderror"
-                    wire:model="startTime">
+                    wire:model="startTime" required>
 
                 <label class="form-label mt-2">{{ __('Hora final') }}</label>
-                <input type="time" class="form-control @error('endTime') is-invalid @enderror" wire:model="endTime">
-                <hr>
+                <input type="time" class="form-control @error('endTime') is-invalid @enderror" wire:model="endTime"
+                    required>
+
+                <label class="form-label mt-2">{{ __('Numero de cupos') }}</label>
+                <input type="number" class="form-control @error('max_quotas') is-invalid @enderror"
+                    wire:model="max_quotas" placeholder="Ingrese el numero de cupos" required>
+
+                <label class="form-label mt-2">{{ __('Horario recurrente (Ingrese la columna del mes)') }}</label>
+                <input type="number" max="6" class="form-control @error('daysOfWeek') is-invalid @enderror"
+                    wire:model="daysOfWeek" placeholder="Ingrese el numero de columan del mes">
 
                 <label class="form-label mt-2">{{ __('Color del Horario') }}</label>
                 <input type="color" class="form-control @error('color') is-invalid @enderror" wire:model="color"
-                    required autofocus>
+                    required>
 
                 <label class="form-label mt-2">{{ __('Color del texto') }}</label>
                 <input type="color" class="form-control @error('textColor') is-invalid @enderror"
-                    wire:model="textColor" required autofocus>
-
+                    wire:model="textColor" required>
         </x-slot>
 
         <x-slot name="footer">
@@ -120,6 +110,7 @@
         $(document).ready(function() {
             toastr.options = {
                 "positionClass": "toast-top-right",
+                "preventDuplicates": true,
                 "showDuration": "500",
                 "hideDuration": "1000",
                 "timeOut": "5000",
@@ -130,7 +121,24 @@
                 "hideMethod": "fadeOut"
             }
         });
+        window.addEventListener('confirmDeleteAppointments', event => {
+            const message = event.detail[0].message;
+            const confirmButtonText = event.detail[0].confirmButtonText;
 
+            Swal.fire({
+                title: message,
+                text: "Esta acción no se puede deshacer!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: confirmButtonText
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    @this.call('destroy');
+                }
+            });
+        });
         window.addEventListener('success', event => {
             toastr.success(event.detail[0].message);
         });

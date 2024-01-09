@@ -18,7 +18,7 @@ class UsersIndex extends Component
     public $sort = 'id';
     public $direction = 'desc';
     protected $paginationTheme = 'bootstrap';
-    public $id, $name, $email, $password,  $selectedRoles = [];
+    public $id, $name, $email, $password,  $selectedRoles = [], $userId;
 
     public function render()
     {
@@ -79,10 +79,20 @@ class UsersIndex extends Component
         }
     }
 
-    public function destroy($id)
+    public function confirmDestroy($id)
+    {
+        $this->userId = $id;
+        $this->dispatch('confirmDeleteAppointments', [
+            'message' => '¿Estás seguro?',
+            'confirmButtonText' => 'Sí, eliminarlo',
+        ]);
+    }
+
+
+    public function destroy()
     {
         try {
-            User::find($id)->delete();
+            User::where('id', $this->userId)->firstOrFail()->delete();
             $this->dispatch('success', ['message' => 'Se ha eliminado correctamente']);
         } catch (\Exception $e) {
             $this->dispatch('error', ['message' => 'Algo va mal al eliminar al usuario']);

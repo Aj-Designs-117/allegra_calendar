@@ -46,7 +46,7 @@
             <!-- Collapsible wrapper -->
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Navbar brand -->
-                <a class="navbar-brand mt-2 mt-lg-0" href="{{ route('agenda') }}">
+                <a class="navbar-brand mt-2 mt-lg-0" href="{{ url('/') }}">
                     <x-application-mark class="mx-2 rounded-circle" />
                 </a>
                 <!-- Left links -->
@@ -55,13 +55,20 @@
                         <a class="nav-link" href="{{ route('agenda') }}">{{ __('Inicio') }}</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('students.index') }}">{{ __('Historial') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('students.rules') }}">{{ __('Reglas') }}</a>
+                    </li>
+                    <li class="nav-item">
                         @can('admin.index')
                             <a class="nav-link" href="{{ route('admin.index') }}">{{ __('Administrador') }}</a>
                         @endcan
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="" data-bs-toggle="modal"
-                            data-bs-target="#infoModal">{{ __('Suscripción') }}</a>
+                        <button type="button" class="nav-link" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#infoModal">
+                            {{ __('Suscripción') }}
+                        </button>
                     </li>
                 </ul>
                 <!-- Left links -->
@@ -74,7 +81,6 @@
                     <a data-mdb-dropdown-init class="nav-link dropdown-toggle hidden-arrow px-0" href="#"
                         id="navbarDropdownMenuLink" role="button" aria-expanded="false">
                         <strong><small>{{ Auth::user()->name }}</small></strong>
-                        {{-- <i class="fas fa-chevron-circle-down fa-md"></i> --}}
                         <i class="fa-solid fa-chevron-down fa-sm"></i>
 
                     </a>
@@ -110,9 +116,8 @@
     <main>
         {{ $slot }}
     </main>
-
+  
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.1.0/mdb.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
@@ -120,7 +125,6 @@
         var urlGlobal = {!! json_encode(url('/')) !!}
     </script>
     @vite(['resources/js/fullcalendar.js'])
-
 
     @livewireScripts
 </body>

@@ -9,9 +9,9 @@ class Appointment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'date', 'time', 'event_id', 'user_id', 'id'];
+    protected $fillable = ['id', 'title', 'date', 'time', 'event_id', 'user_id', 'available_quotas'];
 
-    public $timestamps = true;
+    public $timestamps = false;
 
     public function user()
     {

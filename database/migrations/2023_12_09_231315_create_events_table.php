@@ -16,13 +16,11 @@ return new class extends Migration
             $table->string('title');
             $table->string('color');
             $table->string('textColor');
-            $table->datetime('start');
-            $table->datetime('end');
-            $table->text('daysOfWeek')->nullable();
             $table->time('startTime')->nullable();
             $table->time('endTime')->nullable();
-            $table->integer('limited_quotas')->default(0);
-            $table->integer('original_quotas');
+            $table->text('daysOfWeek')->nullable();
+            $table->integer('max_quotas')->default(0);
+            $table->timestamps();
         });
     }
 

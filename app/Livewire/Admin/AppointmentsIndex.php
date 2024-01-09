@@ -4,6 +4,8 @@ namespace App\Livewire\Admin;
 
 use App\Models\Appointment;
 use App\Models\Event;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 use Livewire\Component;
 
@@ -15,6 +17,7 @@ class AppointmentsIndex extends Component
     public $sort = 'id';
     public $direction = 'desc';
     protected $paginationTheme = 'bootstrap';
+    public $appointmentId;
 
     public function render()
     {
@@ -23,22 +26,30 @@ class AppointmentsIndex extends Component
                 ->orWhere('date', 'like', '%' . $this->search . '%');
         })
             ->orderBy($this->sort, $this->direction)
+            // ->whereDate('date', Carbon::today())
             ->paginate(15);
+
         return view('livewire.admin.appointments-index', compact('appointments'));
     }
 
-    public function destroy($id, $event_id)
+    public function confirmDestroy($id)
+    {
+        $this->appointmentId = $id;
+        $this->dispatch('confirmDeleteAppointments', [
+            'message' => '¿Estás seguro?',
+            'confirmButtonText' => 'Sí, eliminarlo',
+        ]);
+    }
+
+    public function destroy()
     {
         try {
-            $limited_quotas = Event::findOrFail($event_id);
-            if ($limited_quotas) {
-                $limited_quotas->update(['limited_quotas' => $limited_quotas->limited_quotas + 1]);
-            }
+            Appointment::where('id', $this->appointmentId)->firstOrFail()->delete();
 
-            Appointment::find($id)->delete();
-            return response()->json(['success' => 'Se ha borrado correctamente']);
+            $this->dispatch('success', ['message' => 'Se ha borrado correctamente']);
+
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Algo va mal al borrar']);
+            $this->dispatch('error', ['message' => 'Algo va mal al borrar']);
         }
     }
 }

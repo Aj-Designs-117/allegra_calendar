@@ -7,13 +7,11 @@ document.addEventListener("DOMContentLoaded", function () {
         locale: "es",
         timeZone: "locale",
         allDaySlot: false,
-        selectable: true,
-        themeSystem: 'bootstrap5',
         headerToolbar: {
         left: "prev,next today",
-        right: "timeGridDay,listWeek,timeGridListDay",
+        right: "listWeek,timeGridListDay",
     },
-        views: {
+    views: {
         timeGridListDay: {
             type: 'listWeek',
             duration: { days: 1 },
@@ -26,12 +24,12 @@ document.addEventListener("DOMContentLoaded", function () {
             idEvent = info.event.id;
             $.ajax({
                 type: "GET",
-                url: "/event/show/" + info.event.id,
+                url: `/event/show/${info.event.id}/${info.event.start.toISOString().slice(0, 10)}`,
                 success: function (data) {
                     $("#eventDate").val(info.event.start.toISOString().slice(0, 10));
-                    $("#eventTime").val(data.time);
-                    $("#eventTitle").val(data.title);
-                    $("#eventQuota").val(data.limited_quotas);
+                    $("#eventTitle").val(data.event.title);
+                    $("#eventTime").val(data.event.time);
+                    $("#appointmentQuota").val(data.appointments_quotas);
                 },
                 error: function (error) {
                     if (error.responseJSON) {
@@ -41,12 +39,13 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         },
     });
-calendar.render();
+    calendar.render();
 });
 
 $(document).ready(function () {
     toastr.options = {
         positionClass: "toast-top-right",
+        preventDuplicates: true,
         showDuration: "500",
         hideDuration: "1000",
         timeOut: "5000",
@@ -65,16 +64,15 @@ function listAppointments() {
         url: "/agenda/list",
         success: function (data) {
             $("#tableListAppointments tbody").empty();
-
             $.each(data, function (index, appointment) {
                 $("#tableListAppointments tbody").append(
                     `<tr>
-              <td><small>${appointment.title}</small></td>
-              <td><small>${appointment.date}</small></td>
-              <td><small>${appointment.time}</small></td>
-              <td><button type="submit" class="btn btn-danger btn-sm destroyAppointment" data-appointment-id="${appointment.id}/${appointment.event_id}/${appointment.user_id}"><i class="fa-solid fa-trash"></i></button></td>
-            </tr>
-            `
+                        <td><small>${appointment.title}</small></td>
+                        <td><small>${appointment.date}</small></td>
+                        <td><small>${appointment.time}</small></td>
+                        <td><button type="submit" class="btn btn-danger btn-sm destroyAppointment" data-appointment-id="${appointment.id}/${appointment.user_id}"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                    `
                 );
             });
         },
@@ -128,6 +126,8 @@ function destroy(appointmentId) {
             listAppointments();
             if (data.success) {
                 toastr.success(data.success);
+            } else if (data.warning) {
+                toastr.warning(data.warning);
             } else {
                 toastr.error(data.error);
             }

@@ -1,5 +1,5 @@
 <div class="container">
-    <div id='calendar'></div>
+    <div id='calendar' class="mb-2"></div>
 </div>
 
 @push('js')
@@ -10,6 +10,7 @@
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: "es",
+                allDaySlot: false,
                 selectable: true,
                 headerToolbar: {
                     left: 'prev,next today',

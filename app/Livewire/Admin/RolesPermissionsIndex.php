@@ -13,7 +13,7 @@ class RolesPermissionsIndex extends Component
     use WithPagination;
 
     protected $paginationTheme = 'bootstrap';
-    public $id, $name, $selectedPermissions = [];
+    public $id, $name, $selectedPermissions = [], $rolesPermissionsId;
 
     public function render()
     {
@@ -52,10 +52,20 @@ class RolesPermissionsIndex extends Component
         }
     }
 
-    public function destroy($id)
+    public function confirmDestroy($id)
+    {
+        $this->rolesPermissionsId = $id;
+        $this->dispatch('confirmDeleteAppointments', [
+            'message' => '¿Estás seguro?',
+            'confirmButtonText' => 'Sí, eliminarlo',
+        ]);
+    }
+
+
+    public function destroy()
     {
         try {
-            Role::find($id)->delete();
+            Role::where('id', $this->rolesPermissionsId)->firstOrFail()->delete();
             $this->dispatch('success', ['message' => 'Se ha eliminado correctamente']);
         } catch (\Exception $e) {
             $this->dispatch('error', ['message' => 'Algo va mal al eliminar el role']);

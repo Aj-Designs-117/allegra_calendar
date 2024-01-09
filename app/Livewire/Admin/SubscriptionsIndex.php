@@ -15,59 +15,53 @@ class SubscriptionsIndex extends Component
     public $sort = 'id';
     public $direction = 'desc';
     protected $paginationTheme = 'bootstrap';
-    public $user_id, $id, $status, $class_limit, $description, $price;
+    public $user_id, $id, $status, $limit_class, $description, $price, $subscriptionId;
 
     public function render()
     {
         $subscriptions = Subscription::whereNotIn('id', array_merge([1, 2]))->with('user')
+            ->with(['user', 'package'])
             ->where(function ($query) {
-                $query->where('description', 'like', '%' . $this->search . '%')
-                    ->orWhere('price', 'like', '%' . $this->search . '%');
+                $query->whereHas('user', function ($subQuery) {
+                    $subQuery->where('name', 'like', '%' . $this->search . '%')
+                        ->orWhere('email', 'like', '%' . $this->search . '%');
+                });
             })
             ->orderBy($this->sort, $this->direction)
             ->paginate(15);
+
         return view('livewire.admin.subscriptions-index', compact('subscriptions'));
     }
 
 
     public function show_subscription($id)
     {
-        $subscription = Subscription::find($id);
+        $subscription = Subscription::where('id', $id)->with('package')->first();
         $this->id = $subscription->id;
-        $this->class_limit = $subscription->class_limit;
-        $this->description = $subscription->description;
-        $this->price = $subscription->price;
+        $this->limit_class = $subscription->package->class;
+        $this->description = $subscription->package->description;
+        $this->price = $subscription->package->price;
     }
 
 
     public function renew_subscription($id)
     {
-        $this->validate([
-            'description' => 'required',
-            'price' => 'required',
-            'class_limit' => 'required',
-            'status' => 'required',
-        ]);
-
         $this->validate(['status' => 'required']);
 
         try {
-            $subscription = Subscription::select('status')->find($id);
+            $subscription = Subscription::select('status')->where('id', $id)->firstOrFail();
 
             if ($subscription->status == 'Inactivo') {
-                $startDate = now();
+                // $startDate = now();
                 $newEndDate = now()->addDays(30);
 
                 Subscription::where('id', $id)->update([
-                    'start_date' => $startDate,
+                    // 'start_date' => $startDate,
                     'end_date' => $newEndDate,
-                    'description' => $this->description,
-                    'price' => $this->price,
-                    'class_limit' => $this->class_limit,
                     'status' => $this->status,
                 ]);
 
-                $this->dispatch('success', ['message' => 'Tu suscripción ha sido renovada.']);
+                $this->dispatch('success', ['message' => 'La suscripción ha sido renovada.']);
                 $this->dispatch('close-modal');
             } else {
                 Subscription::where('id', $id)->update([
@@ -81,10 +75,20 @@ class SubscriptionsIndex extends Component
         }
     }
 
-    public function destroy($id)
+    
+    public function confirmDestroy($id)
+    {
+        $this->subscriptionId = $id;
+        $this->dispatch('confirmDeleteAppointments', [
+            'message' => '¿Estás seguro?',
+            'confirmButtonText' => 'Sí, eliminarlo',
+        ]);
+    }
+
+    public function destroy()
     {
         try {
-            Subscription::find($id)->delete();
+            Subscription::where('id', $this->subscriptionId)->firstOrFail()->delete();
             $this->dispatch('success', ['message' => 'Se ha eliminado correctamente']);
         } catch (\Exception $e) {
             $this->dispatch('error', ['message' => 'Algo va mal al eliminar la suscripcion']);

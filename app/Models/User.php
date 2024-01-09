@@ -75,4 +75,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Subscription::class, 'user_id', 'id');
     }
+
+    public function records()
+    {
+        return $this->hasMany(Record::class);
+    }
 }

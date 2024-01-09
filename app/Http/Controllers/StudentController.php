@@ -15,10 +15,10 @@ class StudentController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $subscription = Subscription::where('user_id', $user->id)
-            ->select('description', 'price', 'class_limit', 'status', 'start_date', 'end_date')
-            ->firstOrNew();;
-        return view('dashboard', compact('subscription'));
+        $subscriptions = Subscription::with('package')->where('user_id', $user->id)
+            ->select('limit_class', 'status', 'start_date', 'end_date', 'package_id')
+            ->firstOrNew();
+        return view('dashboard', compact('subscriptions'));
     }
 
     public function create()
@@ -31,8 +31,6 @@ class StudentController extends Controller
                 'title' => $event->title,
                 'color' => $event->color,
                 'textColor' => $event->textColor,
-                'start' => $event->start,
-                'end' => $event->end,
                 'daysOfWeek' => $event->daysOfWeek,
                 'startTime' => $event->startTime,
                 'endTime' => $event->endTime,
@@ -42,18 +40,27 @@ class StudentController extends Controller
         return response()->json($events);
     }
 
-    public function show($id)
+    public function show($id, $date)
     {
-        $event = Event::select('id', 'title', 'start', 'daysOfWeek', 'limited_quotas')->find($id);
+        try {
+            $event = Event::select('id', 'title', 'startTime', 'max_quotas')->findOrFail($id);
+            $event->time = Carbon::parse($event->startTime)->format('H:i');
+            $total_appointment_quotas = $event->max_quotas;
 
-        if (!$event) {
-            return response()->json(['error' => 'Event not found'], 404);
+            if (Appointment::where('event_id', $id)->whereDate('date', $date)->exists()) {
+                $appointment_quotas = Appointment::where('event_id', $id)->whereDate('date',  $date)->count();
+                $total_appointment_quotas = $event->max_quotas - $appointment_quotas;
+            } else {
+                $event_quota = Event::where('id', $id)->select('max_quotas')->firstOrFail();
+                $total_appointment_quotas = $event_quota->max_quotas;
+            }
+
+            return response()->json([
+                'event' => $event,
+                'appointments_quotas' =>  $total_appointment_quotas,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Algo va con el horario.', $e]);
         }
-
-        // $event->date = Carbon::parse($event->start)->format('Y-m-d');
-        $event->time = Carbon::parse($event->start)->format('H:i:s');
-        unset($event->start);
-
-        return response()->json($event);
     }
 }

@@ -23,7 +23,7 @@
                 <label for="form-label">{{ __('Buscar') }}</label>
                 <input wire:model.live="search" type="search" class="form-control"
                     placeholder="Ingrese la clave o slug">
-                <table class="table table-striped">
+                <table class="table table-striped table-responsive text-nowrap">
                     <thead>
                         <tr>
                             <th scope="col">ID</th>
@@ -65,6 +65,7 @@
         $(document).ready(function() {
             toastr.options = {
                 "positionClass": "toast-top-right",
+                "preventDuplicates": true,
                 "showDuration": "500",
                 "hideDuration": "1000",
                 "timeOut": "5000",

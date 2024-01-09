@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->string('description');
-            $table->string('price');
+            $table->integer('limit_class');
             $table->string('status');
-            $table->integer('class_limit');
             $table->date('start_date');
             $table->date('end_date');
-            $table->foreignId('user_id')->constrained()->nullable(); // Relación con la tabla users
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('package_id')->constrained('packages');
             $table->timestamps();
+            $table->unique(['user_id']);
         });
     }
 

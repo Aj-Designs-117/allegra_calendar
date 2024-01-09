@@ -45,6 +45,7 @@
         $(document).ready(function() {
             toastr.options = {
                 "positionClass": "toast-top-right",
+                "preventDuplicates": true,
                 "showDuration": "500",
                 "hideDuration": "1000",
                 "timeOut": "5000",

@@ -319,7 +319,7 @@ return [
             'text'        => 'Horarios',
             'route'         => 'admin.events.index',
             'icon'        => 'fas fa-fw fa-clock',
-            'can'         => ''
+            'can'         => 'admin.events.index'
         ],
         [
             'text'        => 'Lista de agendados',
@@ -328,9 +328,15 @@ return [
             'can'         => ''
         ],
         [
+            'text'        => 'Paquetes',
+            'route'         => 'admin.packages.index',
+            'icon'        => 'fas fa-fw fa-box',
+            'can'         => 'admin.packages.index'
+        ],
+        [
             'text'        => 'Suscripciones',
             'route'         => 'admin.subscriptions.index',
-            'icon'        => 'fas fa-fw fa-box',
+            'icon'        => 'fas fa-fw fa-user-plus',
             'can'         => 'admin.subscriptions.index'
         ],
         [
@@ -452,17 +458,27 @@ return [
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '//cdn.jsdelivr.net/npm/sweetalert2@8',
+                    'location' => 'vendor/sweetalert2/sweetalert2.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => 'vendor/sweetalert2/sweetalert2.min.css',
                 ],
             ],
         ],
         'Toastr' => [
-            'active' => true,
+            'active' => false,
             'files' => [
                 [
                     'type' => 'js',
-                    'asset' => true,
+                    'asset' => false,
                     'location' => 'vendor/toastr/toastr.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => 'vendor/toastr/toastr.min.css',
                 ],
             ],
         ],

@@ -4,11 +4,10 @@ namespace App\Livewire\Admin;
 
 use App\Models\Event;
 use Livewire\Component;
-use Illuminate\Http\Request;
 
 class EventsCreate extends Component
 {
-    public $title, $start, $end, $limited_quotas, $daysOfWeek, $startTime, $endTime, $color, $textColor;
+    public $title, $max_quotas, $daysOfWeek, $startTime, $endTime, $color, $textColor;
 
     public function render()
     {
@@ -18,21 +17,23 @@ class EventsCreate extends Component
     public function resetFields()
     {
         $this->title = '';
-        $this->start = '';
-        $this->end = '';
+        $this->startTime = '';
+        $this->endTime = '';
+        $this->max_quotas = '';
+        $this->daysOfWeek = '';
     }
 
-    public function store(Request $request)
+    public function store()
     {
 
         $this->validate([
             'title' => 'required',
             'color' => 'required',
             'textColor' => 'required',
-            'start' => 'required',
-            'end' => 'required',
-            'limited_quotas' => 'required'
-
+            'startTime' => 'required',
+            'endTime' => 'required',
+            'max_quotas' => 'required',
+            'daysOfWeek' => 'required',
         ]);
 
         try {
@@ -40,12 +41,10 @@ class EventsCreate extends Component
                 'title' => $this->title,
                 'color' => $this->color,
                 'textColor' => $this->textColor,
-                'start' => $this->start,
-                'end' => $this->end,
                 'daysOfWeek' => $this->daysOfWeek ?? null,
                 'startTime' => $this->startTime ?? null,
                 'endTime' => $this->endTime ?? null,
-                'limited_quotas' => $this->limited_quotas,
+                'max_quotas' => $this->max_quotas,
 
             ];
             Event::create($data);

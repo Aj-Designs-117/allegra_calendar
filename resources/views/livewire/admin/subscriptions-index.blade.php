@@ -2,7 +2,7 @@
     <div class="card">
         <div class="card-header">
             <x-adminlte-input type="search" wire:model.live="search" name="iSearch" label="{{ __('Buscar') }}"
-                placeholder="Ingrese la descripcion o el precio" igroup-size="md">
+                placeholder="Ingrese el nombre o email del usuario" igroup-size="md">
                 <x-slot name="prependSlot">
                     <div class="input-group-text text-primary">
                         <i class="fas fa-search"></i>
@@ -12,16 +12,14 @@
         </div>
 
         @if ($subscriptions->count())
-            <div class="card-body" wire:poll.10s>
-                <table class="table table-striped text-center">
+            <div class="card-body table-responsive" wire:poll.10s>
+                <table class="table table-striped text-nowrap">
                     <thead>
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Nombre</th>
-                            <th scope="col">Decripcion</th>
                             <th scope="col">Clases faltantes</th>
-                            <th scope="col">Precio</th>
-                            <th scope="col">Fecha de inicio</th>
+                            <th scope="col">Fecha de suscripción</th>
                             <th scope="col">Fecha de vencimiento</th>
                             <th scope="col">Estatus</th>
                             <th scope="col">Acciones</th>
@@ -32,9 +30,7 @@
                             <tr>
                                 <th scope="row">{{ $subscription->id }}</th>
                                 <th scope="row">{{ $subscription->user->name }}</th>
-                                <td>{{ $subscription->description }}</td>
-                                <td>{{ $subscription->class_limit }} clases</td>
-                                <td>${{ $subscription->price }}.00 mxn</td>
+                                <td>{{ $subscription->limit_class }} clases</td>
                                 <td>{{ $subscription->start_date }}</td>
                                 <td>{{ $subscription->end_date }}</td>
                                 <td>
@@ -52,7 +48,7 @@
                                             data-target="#assignModal" />
                                     @endcan
                                     @can('admin.subscriptions.destroy')
-                                        <x-adminlte-button wire:click="destroy('{{ $subscription->id }}')" class="btn-sm"
+                                        <x-adminlte-button wire:click="confirmDestroy('{{ $subscription->id }}')" class="btn-sm"
                                             theme="danger" icon="fas fa-trash-alt" />
                                     @endcan
                                 </td>
@@ -60,6 +56,10 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+
+            <div class="card-footer d-flex justify-content-end">
+                {{ $subscriptions->links() }}
             </div>
         @else
             <div class="card-body">
@@ -73,17 +73,24 @@
         <x-slot name="body">
             <form wire:submit.prevent="renew_subscription('{{ $id }}')">
                 <label class="form-label mt-2">{{ __('Descripcion') }}</label>
-                <input type="text" class="form-control @error('description') is-invalid @enderror"
-                    wire:model="description" required placeholder="Ingrese la descripcion" autofocus
-                    autocomplete="description">
+                <input type="text" class="form-control" wire:model="description" required
+                    placeholder="Ingrese la descripcion" disabled>
 
                 <label class="form-label mt-2">{{ __('Precio') }}</label>
-                <input type="text" class="form-control @error('price') is-invalid @enderror" wire:model="price"
-                    required placeholder="Ingrese el precio" autofocus autocomplete="price">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="text" class="form-control @error('price') is-invalid @enderror" wire:model="price"
+                        required placeholder="Ingrese el precio" disabled>
+                    <div class="input-group-append">
+                        <span class="input-group-text">.00</span>
+                    </div>
+                </div>
 
                 <label class="form-label mt-2">{{ __('Numero de clases') }}</label>
-                <input type="number" class="form-control @error('class_limit') is-invalid @enderror"
-                    wire:model="class_limit" required placeholder="Ingrese el numero de clases" autofocus>
+                <input type="number" class="form-control" wire:model="limit_class" required
+                    placeholder="Ingrese el numero de clases" disabled>
 
                 <label class="form-label mt-2">{{ __('Selecciones el estatus') }}</label>
                 @error('status')
@@ -126,6 +133,7 @@
         $(document).ready(function() {
             toastr.options = {
                 "positionClass": "toast-top-right",
+                "preventDuplicates": true,
                 "showDuration": "500",
                 "hideDuration": "1000",
                 "timeOut": "5000",
@@ -136,7 +144,24 @@
                 "hideMethod": "fadeOut"
             }
         });
+        window.addEventListener('confirmDeleteAppointments', event => {
+            const message = event.detail[0].message;
+            const confirmButtonText = event.detail[0].confirmButtonText;
 
+            Swal.fire({
+                title: message,
+                text: "Esta acción no se puede deshacer!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: confirmButtonText
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    @this.call('destroy');
+                }
+            });
+        });
         window.addEventListener('success', event => {
             toastr.success(event.detail[0].message);
         });

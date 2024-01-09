@@ -11,8 +11,8 @@
     </div>
 
     @if ($users->count())
-        <div class="card-body" wire:poll.10s>
-            <table class="table table-striped">
+        <div class="card-body table-responsive">
+            <table class="table table-striped text-nowrap">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
@@ -38,7 +38,7 @@
                                         data-toggle="modal" data-target="#rolModal" />
                                 @endcan
                                 @can('admin.users.destroy')
-                                    <x-adminlte-button wire:click="destroy('{{ $user->id }}')" class="btn-sm"
+                                    <x-adminlte-button wire:click="confirmDestroy('{{ $user->id }}')" class="btn-sm userDelete"
                                         theme="danger" icon="fas fa-trash-alt" />
                                 @endcan
                             </td>
@@ -138,6 +138,7 @@
         $(document).ready(function() {
             toastr.options = {
                 "positionClass": "toast-top-right",
+                "preventDuplicates": true,
                 "showDuration": "500",
                 "hideDuration": "1000",
                 "timeOut": "5000",
@@ -148,7 +149,24 @@
                 "hideMethod": "fadeOut"
             }
         });
+        window.addEventListener('confirmDeleteAppointments', event => {
+            const message = event.detail[0].message;
+            const confirmButtonText = event.detail[0].confirmButtonText;
 
+            Swal.fire({
+                title: message,
+                text: "Esta acción no se puede deshacer!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: confirmButtonText
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    @this.call('destroy');
+                }
+            });
+        });
         window.addEventListener('success', event => {
             toastr.success(event.detail[0].message);
         });

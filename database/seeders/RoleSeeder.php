@@ -63,5 +63,15 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'admin.subscriptions.store', 'description' => 'Guardar una suscripcion'])->syncRoles([$role1, $role3]);
         Permission::create(['name' => 'admin.subscriptions.package', 'description' => 'Asignar una suscripcion a un usuario'])->syncRoles([$role1, $role3]);
         Permission::create(['name' => 'admin.subscriptions.destroy', 'description' => 'Borrar una suscripcion '])->syncRoles([$role1, $role3]);
+
+        Permission::create(['name' => 'admin.packages.index', 'description' => 'Ver pagina de paquetes'])->syncRoles([$role1, $role3]);
+        Permission::create(['name' => 'admin.packages.create', 'description' => 'Crear un nuevo paquete'])->syncRoles([$role1, $role3]);
+        Permission::create(['name' => 'admin.packages.store', 'description' => 'Guardar un paquete'])->syncRoles([$role1, $role3]);
+        Permission::create(['name' => 'admin.packages.update', 'description' => 'Actualizar un paquete'])->syncRoles([$role1, $role3]);
+        Permission::create(['name' => 'admin.packages.edit', 'description' => 'Editar un paquete'])->syncRoles([$role1, $role3]);
+        Permission::create(['name' => 'admin.packages.destroy', 'description' => 'Borrar un paquete'])->syncRoles([$role1, $role3]);
+
+        Permission::create(['name' => 'admin.appointments.index', 'description' => 'Ver pagina de lista de agendados'])->syncRoles([$role1, $role3]);
+        Permission::create(['name' => 'admin.appointments.destroy', 'description' => 'Borrar un agendado'])->syncRoles([$role1, $role3]);
     }
 }

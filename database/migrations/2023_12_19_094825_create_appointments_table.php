@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('title');
             $table->date('date');
             $table->time('time');
+            $table->integer('available_quotas')->default(0);
             $table->integer('event_id');
-            $table->foreignId('user_id')->constrained()->nullable(); // Relación con la tabla users
-            $table->timestamps();
+            $table->foreignId('user_id')->constrained();
         });
     }
 

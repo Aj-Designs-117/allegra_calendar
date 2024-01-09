@@ -16,6 +16,8 @@ Route::view('/permisos', 'admin.permisos.index')->middleware('can:admin.permissi
 
 Route::view('/events', 'admin.events.index')->middleware('can:admin.events.index')->name('admin.events.index');
 
+Route::view('/packages', 'admin.packages.index')->middleware('can:admin.packages.index')->name('admin.packages.index');
+
 Route::view('/subscriptions', 'admin.subscriptions.index')->middleware('can:admin.subscriptions.index')->name('admin.subscriptions.index');
 
-Route::view('/agendados', 'admin.appointments.index')->name('admin.appointments.index');
+Route::view('/agendados', 'admin.appointments.index')->middleware('can:admin.appointments.index')->name('admin.appointments.index');

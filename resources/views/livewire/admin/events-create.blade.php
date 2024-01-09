@@ -11,38 +11,28 @@
                 <input type="text" class="form-control @error('title') is-invalid @enderror" wire:model="title"
                     required placeholder="Ingrese el titulo del evento" autofocus autocomplete="title">
 
-                <label class="form-label">{{ __('Fecha de inicio') }}</label>
-                <input type="datetime-local" class="form-control @error('start') is-invalid @enderror"
-                    wire:model="start">
+                <label class="form-label mt-2">{{ __('Hora de inicio') }}</label>
+                <input type="time" class="form-control @error('startTime') is-invalid @enderror"
+                    wire:model="startTime" required>
 
-                <label class="form-label mt-2">{{ __('Fecha final') }}</label>
-                <input type="datetime-local" class="form-control @error('end') is-invalid @enderror" wire:model="end">
+                <label class="form-label mt-2">{{ __('Hora final') }}</label>
+                <input type="time" class="form-control @error('endTime') is-invalid @enderror" wire:model="endTime" required>
 
                 <label class="form-label mt-2">{{ __('Numero de cupos') }}</label>
-                <input type="number" class="form-control @error('limited_quotas') is-invalid @enderror"
-                    wire:model="limited_quotas" placeholder="Ingrese el numero de cupos">
+                <input type="number" class="form-control @error('max_quotas') is-invalid @enderror"
+                    wire:model="max_quotas" placeholder="Ingrese el numero de cupos" required>
 
-                <label class="form-label">{{ __('Color del Horario') }}</label>
+                <label class="form-label mt-2">{{ __('Horario recurrente (Ingrese la columna del mes)') }}</label>
+                <input type="number" max="6" class="form-control @error('daysOfWeek') is-invalid @enderror"
+                    wire:model="daysOfWeek" placeholder="Ingrese el numero de columan del mes" required>
+
+                <label class="form-label mt-2">{{ __('Color del Horario') }}</label>
                 <input type="color" class="form-control @error('color') is-invalid @enderror" wire:model="color"
                     required autofocus>
 
                 <label class="form-label mt-2">{{ __('Color del texto') }}</label>
                 <input type="color" class="form-control @error('textColor') is-invalid @enderror"
                     wire:model="textColor" required autofocus>
-
-                <hr class="mb-1">
-                <p class="text-danger h5">Eventos fijos (opcional)</p>
-                <label class="form-label">{{ __('Horario recurrente (Ingrese la columna del mes)') }}</label>
-                <input type="number" max="7" class="form-control @error('daysOfWeek') is-invalid @enderror"
-                    wire:model="daysOfWeek" placeholder="Ingrese el numero de columan del mes">
-
-                <label class="form-label mt-2">{{ __('Hora de inicio') }}</label>
-                <input type="time" class="form-control @error('startTime') is-invalid @enderror"
-                    wire:model="startTime">
-
-                <label class="form-label mt-2">{{ __('Hora final') }}</label>
-                <input type="time" class="form-control @error('endTime') is-invalid @enderror" wire:model="endTime">
-                <hr>
         </x-slot>
 
         <x-slot name="footer">
