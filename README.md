@@ -1,1 +1,1 @@
-<p align="center"><a href="https://allegraaerialdance.com/" target="_blank"><img src="{{ asset('images/logo-allegra.png') }}" width="400"></a></p>
+<p align="center"><a href="https://allegraaerialdance.com/" target="_blank"><img src="https://allegraaerialdance.com/images/logo-allegra.png" width="400"></a></p>
